@@ -7,8 +7,8 @@ Python, Django
 
 
 <h2>Resources</h2>
-<p><a href"https://docs.google.com/presentation/d/1abO6JcKWAkcVA561uh2RTfNF8V2jevdhFOSlTHz5Z6A/edit?usp=sharing">Pitch Deck</a></p>
-<p><a href"https://trello.com/b/02zzkynh/project-flow">Trello Board</a></p>
-<p><a href"https://community-connection.herokuapp.com/">Heroku</a></p> 
+[Pitch Deck](https://docs.google.com/presentation/d/1abO6JcKWAkcVA561uh2RTfNF8V2jevdhFOSlTHz5Z6A/edit?usp=sharing)
+[Trello Board](https://trello.com/b/02zzkynh/project-flow)
+[Heroku](https://community-connection.herokuapp.com/)
 
 <h2>Future Enhancements</h2>
