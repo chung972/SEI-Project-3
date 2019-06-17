@@ -1,8 +1,14 @@
 from django.shortcuts import render, redirect
+# these two imports below are generic views provided by Django
+from django.views.generic import ListView, DetailView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+# these four imports below are required for all login/out authentication processes 
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+# import models below
+from .models import Event
 
 # TODO:
 #  - we still need to implement login_required and LoginRequiredMixin
@@ -38,3 +44,28 @@ def signup(request):
     form = UserCreationForm()
     context = {'form': form, 'error_message': error_message}
     return render(request, 'registration/signup.html', context)
+
+# full CRUD operations for Events below:
+class EventList(ListView):
+    print("you in eventlist")
+    model = Event
+
+
+class EventDetail(DetailView):
+    model = Event
+
+
+class EventCreate(CreateView):
+    model = Event
+    fields = '__all__'
+    success_url = '/events/'
+
+
+class EventUpdate(UpdateView):
+    model = Event
+    fields = '__all__'
+
+
+class EventDelete(DeleteView):
+    model = Event
+    success_url = '/events/'
