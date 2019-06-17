@@ -8,7 +8,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 # import models below
-from .models import Event
+from .models import Profile, Event
 
 # TODO:
 #  - we still need to implement login_required and LoginRequiredMixin
@@ -45,6 +45,27 @@ def signup(request):
     context = {'form': form, 'error_message': error_message}
     return render(request, 'registration/signup.html', context)
 
+
+# full CRUD operations for Profiles (extension of User) below:
+class ProfileCreate(CreateView):
+    model = Profile
+    fields = ['email', 'organization']
+
+
+class ProfileDetail(DetailView):
+    model = Profile
+
+
+class ProfileUpdate(UpdateView):
+    model = Profile
+    fields = ['email', 'organization']
+
+
+class ProfileDelete(DeleteView):
+    model = Profile
+    success_url = '/'
+
+
 # full CRUD operations for Events below:
 class EventList(ListView):
     print("you in eventlist")
@@ -55,10 +76,14 @@ class EventDetail(DetailView):
     model = Event
 
 
+# for EventCreate/Update, they share the same template (event_form.html);
+# documentation for further study: https://docs.djangoproject.com/en/2.2/ref/class-based-views/generic-display/#listview
+# suffice it to say that CBVs are REALLY powerful and convenient
 class EventCreate(CreateView):
     model = Event
     fields = '__all__'
     success_url = '/events/'
+    # TODO: see if you can redirect straight back to the newly created Event
 
 
 class EventUpdate(UpdateView):
