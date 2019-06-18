@@ -39,4 +39,22 @@
 
   
   </div>
+<div class="row">
+  <div class="col s6">
+    <h3>{{ event.name }}'s Profiles</h3>
+    {% if event.Profiles.count %}
+      {% for profile in event.Profiles.all %}
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">
+              A  {{ profile.name }}
+            </span>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <h5>No Toys :(</h5>
+    {% endif %}
+  </div>
+  
 {% endblock %}

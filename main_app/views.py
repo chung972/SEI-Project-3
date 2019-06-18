@@ -32,6 +32,10 @@ def home(request):
 def about(request):
     return render(request, 'about.html')
 
+def assoc_profile(request, event_id, profile_id):
+    Event.objects.get(id=event_id).profiles.add(profile_id)
+    return redirect('events_detail', event_id=event_id)
+
 def add_photo(request, event_id):
     photo_file = request.FILES.get('photo-file', None)
     if photo_file:
