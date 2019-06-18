@@ -12,9 +12,12 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 # import models below
+
+
 from .models import Profile, Event, Photo, User
 # import forms below
 from .forms import LoginForm, ExtendedUserCreationForm, ProfileForm
+
 
 # TODO:
 #  - we still need to implement login_required and LoginRequiredMixin
@@ -33,6 +36,10 @@ def home(request):
 
 def about(request):
     return render(request, 'about.html')
+
+def assoc_profile(request, event_id, profile_id):
+    Event.objects.get(id=event_id).profiles.add(profile_id)
+    return redirect('events_detail', event_id=event_id)
 
 def add_photo(request, event_id):
     photo_file = request.FILES.get('photo-file', None)
@@ -143,3 +150,10 @@ class EventUpdate(UpdateView):
 class EventDelete(DeleteView):
     model = Event
     success_url = '/events/'
+
+
+class PhotoDelete(DeleteView):
+    model  = Photo
+    success_url = '/events/'
+    # TODO attempt to get success_url to route back to events_detail page
+    
