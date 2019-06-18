@@ -24,7 +24,7 @@
                     <li><a href="{% url 'home' %}">Home</a></li>
                     <li><a href="{% url 'about' %}">About</a></li>
                     {% if user.is_authenticated %}
-                    <li><a href="{% url 'events_index' %}">Event List</a></li>
+                    <li><a href="{% url 'event_list' %}">Event List</a></li>
                     <li><a href="{% url 'events_create' %}">Create Event</a></li>
                     <li><a href="{% url 'logout' %}">Log Out</a></li>
                     {% else %}
