@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 # import models below
 from .models import Profile, Event, Photo
+from django.urls import reverse
 
 # TODO:
 #  - we still need to implement login_required and LoginRequiredMixin
@@ -114,3 +115,10 @@ class EventUpdate(UpdateView):
 class EventDelete(DeleteView):
     model = Event
     success_url = '/events/'
+
+
+class PhotoDelete(DeleteView):
+    model  = Photo
+    success_url = '/events/'
+    # TODO attempt to get success_url to route back to events_detail page
+    
