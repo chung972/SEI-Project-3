@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse
 # these two imports below are generic views provided by Django
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -6,12 +7,14 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 import uuid
 import boto3
 # these four imports below are required for all login/out authentication processes 
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 # import models below
 from .models import Profile, Event, Photo
+# import forms below
+from .forms import LoginForm, ExtendedUserCreationForm, ProfileForm
 
 # TODO:
 #  - we still need to implement login_required and LoginRequiredMixin
@@ -51,19 +54,37 @@ def signup(request):
     if request.method == 'POST':
         # This is how to create a 'user' form object
         # that includes the data from the browser
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
+        form = ExtendedUserCreationForm(request.POST)
+        profile_form = ProfileForm(request.POST)
+        if form.is_valid() and profile_form.is_valid():
             # This will add the user to the database
             user = form.save()
+            # below, we set commit=False so that we don't save profile to the database just yet;
+            # we need to attach the user (created above) to it first
+            profile = profile_form.save(commit=False)
+            # below is where the OneToOneField comes in
+            profile.user = user
+            profile.save()
+
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=password)
             # This is how we log a user in via code
             login(request, user)
             return redirect('/')
         else:
             error_message = 'Invalid sign up - try again'
-    # A bad POST or a GET request, so render signup.html with an empty form
-    form = UserCreationForm()
-    context = {'form': form, 'error_message': error_message}
-    return render(request, 'registration/signup.html', context)
+    else:
+        # A bad POST or a GET request, so render signup.html with an empty form
+        form = ExtendedUserCreationForm()
+        profile_form = ProfileForm()
+
+        context = {
+            'form': form,
+            'profile_form': profile_form,
+            'error_message': error_message
+        }
+        return render(request, 'registration/signup.html', context)
 
 
 # full CRUD operations for Profiles (extension of User) below:
@@ -90,6 +111,9 @@ class ProfileDelete(DeleteView):
 class EventList(ListView):
     print("you in eventlist")
     model = Event
+# something to note: in the "real" world, an ENTIRE APP is dedicated to
+# ONE resource (so, for example, events); that app would handle ALL of the
+# crud operations and whatever else that can be possibly be done with Events
 
 
 class EventDetail(DetailView):
