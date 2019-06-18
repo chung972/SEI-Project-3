@@ -12,7 +12,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 # import models below
-from .models import Profile, Event, Photo
+from .models import Profile, Event, Photo, User
 # import forms below
 from .forms import LoginForm, ExtendedUserCreationForm, ProfileForm
 
@@ -89,17 +89,23 @@ def signup(request):
 
 # full CRUD operations for Profiles (extension of User) below:
 class ProfileCreate(CreateView):
-    model = Profile
-    fields = ['email', 'organization']
+    model = User
 
 
-class ProfileDetail(DetailView):
-    model = Profile
+class UserDetail(DetailView):
+    model = User
+
+
+def user_detail(request, user_id):
+    user = User.objects.get(id=user_id)
+    return render(request, 'user_detail.html', {
+        'user': user
+    })
 
 
 class ProfileUpdate(UpdateView):
-    model = Profile
-    fields = ['email', 'organization']
+    model = User
+    fields = '__all__'
 
 
 class ProfileDelete(DeleteView):
@@ -109,7 +115,6 @@ class ProfileDelete(DeleteView):
 
 # full CRUD operations for Events below:
 class EventList(ListView):
-    print("you in eventlist")
     model = Event
 # something to note: in the "real" world, an ENTIRE APP is dedicated to
 # ONE resource (so, for example, events); that app would handle ALL of the

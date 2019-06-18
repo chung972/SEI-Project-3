@@ -15,8 +15,8 @@ class Profile(models.Model):
 
     # TODO: uncomment the below code once you've set up the correct path; will be necessary
     # when trying to update a profile; also, be mindful of PLURALIZATION when creating the routes
-    # def get_absolute_url(self):
-    #     return reverse('profile_detail', kwargs={'pk': self.id})
+    def get_absolute_url(self):
+        return reverse('user_detail', kwargs={'pk': self.id})
 
 
 # TODO: decide which model you want to hold the ManyToMany attribute;
