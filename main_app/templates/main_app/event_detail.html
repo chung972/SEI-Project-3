@@ -13,9 +13,17 @@
         <p>Location: {{ event.location }}</p>
         <p>Description: {{ event.description }}</p>
       </div>
-      <div class="card-action">
-        <a href="{% url 'events_update' event.id %}">Edit</a>
-        <a href="{% url 'events_delete' event.id %}">Delete</a>
+      <!-- <div class="card-action"> -->
+          
+
+        <div class="fixed-action-btn">
+          <a href="#" class="btn-floating blue btn-large"><i class="large material-icons">menu</i></a>
+          <ul>
+              <li><a href="{% url 'events_delete' event.id %}" class="btn-floating red btn-large"><i class="large material-icons">delete</i></a></li>
+            <li><a href="#" class="btn-floating green btn-large"><i class="large material-icons">add</i></a></li>
+            <li><a href="{% url 'events_update' event.id %}" class="btn-floating orange btn-large"><i class="large material-icons">edit</i></a></li>
+            
+          </ul>
       </div>
     </div>
   </div>
