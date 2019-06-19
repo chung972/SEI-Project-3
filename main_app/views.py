@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 # these two imports below are generic views provided by Django
 from django.views.generic import ListView, DetailView
@@ -6,7 +6,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 # imports to upload images
 import uuid
 import boto3
-# these four imports below are required for all login/out authentication processes 
+# these four imports below are required for all login/out authentication processes
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
@@ -16,7 +16,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Profile, Event, Photo, User
 # import forms below
-from .forms import LoginForm, ExtendedUserCreationForm, ProfileForm
+from .forms import LoginForm, ExtendedUserCreationForm, ExtendedUserChangeForm, ProfileForm
 
 
 # TODO:
@@ -37,15 +37,18 @@ def home(request):
 def about(request):
     return render(request, 'about.html')
 
+
 def assoc_profile(request, event_id, profile_id):
     Event.objects.get(id=event_id).profiles.add(profile_id)
     return redirect('events_detail', event_id=event_id)
+
 
 def add_photo(request, event_id):
     photo_file = request.FILES.get('photo-file', None)
     if photo_file:
         s3 = boto3.client('s3')
-        key = uuid.uuid4().hex[:6] + photo_file.name[photo_file.name.rfind('.'):]
+        key = uuid.uuid4().hex[:6] + \
+            photo_file.name[photo_file.name.rfind('.'):]
         try:
             s3.upload_fileobj(photo_file, BUCKET, key)
             url = f"{S3_BASE_URL}{BUCKET}/{key}"
@@ -78,7 +81,7 @@ def signup(request):
             user = authenticate(username=username, password=password)
             # This is how we log a user in via code
             login(request, user)
-            return redirect('/')
+            return redirect('user_detail', user_id=user.id)
         else:
             error_message = 'Invalid sign up - try again'
     else:
@@ -105,9 +108,43 @@ class UserDetail(DetailView):
 
 def user_detail(request, user_id):
     user = User.objects.get(id=user_id)
-    return render(request, 'user_detail.html', {
+    context = {
         'user': user
-    })
+    }
+    return render(request, 'auth/user_detail.html', context)
+
+
+class UserUpdate(UpdateView):
+    # form_class = ExtendedUserChangeForm
+    # def get_object(self):
+    #     id_ = self.kwargs.get("id")
+    #     return get_object_or_404(User, id=id_)
+    # phone_number = object.user.profile.phone_number
+    fields = ('username', 'email', 'first_name', 'last_name')
+
+    def get_object(self):
+        return self.request.user
+
+
+def user_update(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    if request.method == "POST":
+        form = ExtendedUserChangeForm(request.POST, instance=user)
+        profile_form = ProfileForm(request.POST, instance=user.profile)
+        if form.is_valid() and profile_form.is_valid():
+            user = form.save()
+            profile = profile_form.save(commit=False)
+            profile.user = user
+            profile.save()
+            return redirect('user_detail', user_id=user.id)
+    else:
+        form = ExtendedUserChangeForm(instance=user)
+        profile_form = ProfileForm(instance=user.profile)
+    return render(request, 'auth/user_form.html/', {'form': form, 'profile_form': profile_form})
+
+
+def user_delete(request, user_id):
+    pass
 
 
 class ProfileUpdate(UpdateView):
@@ -153,7 +190,6 @@ class EventDelete(DeleteView):
 
 
 class PhotoDelete(DeleteView):
-    model  = Photo
+    model = Photo
     success_url = '/events/'
     # TODO attempt to get success_url to route back to events_detail page
-    
