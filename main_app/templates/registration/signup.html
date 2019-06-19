@@ -8,8 +8,8 @@
 <form method="post" action="{% url 'signup' %}">
   {% csrf_token %}
   {{ form.as_p }}
-  <input type="submit" class="btn" value="signup">
+  {{ profile_form.as_p }}
+  <input type="submit" class="btn" value="Create New Account">
 </form>
-
 
 {% endblock %}
