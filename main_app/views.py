@@ -37,10 +37,16 @@ def home(request):
 def about(request):
     return render(request, 'about.html')
 
+def assoc_user(request, event_id, user_id):
+    Event.objects.get(id=event_id).users.add(user_id)
+    return redirect('events_detail', pk=event_id)
+    # pay attention to key that is passed in when redirecting
+    # notice we must pass pk and not event_id because of route in urls.py
 
-def assoc_profile(request, event_id, profile_id):
-    Event.objects.get(id=event_id).profiles.add(profile_id)
-    return redirect('events_detail', event_id=event_id)
+def unassoc_user(request, event_id, user_id):
+    Event.objects.get(id=event_id).users.remove(user_id)
+    return redirect('events_detail', pk=event_id)
+
 
 
 def add_photo(request, event_id):
