@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
 
 # Create your models here.
 
@@ -13,10 +14,14 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
+    def create_profile(sender, **kwargs):
+        if kwargs['created']:
+            profile = Profile.objects.create(user=kwargs['instance'])
+
     # TODO: uncomment the below code once you've set up the correct path; will be necessary
     # when trying to update a profile; also, be mindful of PLURALIZATION when creating the routes
-    def get_absolute_url(self):
-        return reverse('user_detail', kwargs={'pk': self.id})
+    # def get_absolute_url(self):
+    #     return reverse('profile_detail', kwargs={'pk': self.id})
 
 
 # TODO: decide which model you want to hold the ManyToMany attribute;

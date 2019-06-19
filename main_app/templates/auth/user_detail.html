@@ -10,12 +10,13 @@
         <span class="card-title">{{ user.username }}</span>
         <p>First Name: {{ user.first_name }}</p>
         <p>Last Name: {{ user.last_name }}</p>
+        <p>Email: {{ user.email }}</p>
         <p>Phone Number: {{ user.profile.phone_number }}</p>
         <p>Affiliations: {{ user.profile.affiliations }}</p>
       </div>
       <div class="card-action">
-        <a href="{% url 'user_update' user.id %}">Edit</a>
-        <a href="{% url 'user_delete' user.id %}">Delete</a>
+          <a href="{% url 'user_update' user.id %}">Edit</a>
+          <a href="{% url 'user_delete' user.id %}">Delete</a>
       </div>
     </div>
   </div>
