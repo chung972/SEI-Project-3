@@ -7,15 +7,16 @@ from django.contrib.auth.models import User
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    organization = models.CharField(max_length=100)
+    affiliations = models.CharField(max_length=100)
+    phone_number = models.IntegerField()
 
     def __str__(self):
-        return self.name
+        return self.user.username
 
     # TODO: uncomment the below code once you've set up the correct path; will be necessary
     # when trying to update a profile; also, be mindful of PLURALIZATION when creating the routes
-    # def get_absolute_url(self):
-    #     return reverse('profile_detail', kwargs={'pk': self.id})
+    def get_absolute_url(self):
+        return reverse('user_detail', kwargs={'pk': self.id})
 
 
 # TODO: decide which model you want to hold the ManyToMany attribute;
@@ -30,13 +31,17 @@ class Event(models.Model):
         null=True
     )
     location = models.CharField(max_length=100)
-    description = models.CharField(max_length=200)
+    description = models.CharField(max_length=200, blank=True)
 
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('events_detail', kwargs={'event_id': self.id})
+        # this method is triggered whenever an instance of this model is created;
+        # very useful for whenever we create/update an instance
+        return reverse('events_detail', kwargs={'pk': self.id})
+        # what reverse() does, essentially, redirect 
+
 
 class Photo(models.Model):
     url = models.CharField(max_length=200)
