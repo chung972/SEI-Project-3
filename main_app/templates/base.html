@@ -9,32 +9,50 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Rajdhani&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Gothic+A1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
     <title>Community Connection</title>
 </head>
 
 <body>
-    <header>
-        <nav class="navbar-fixed">
-            <div class="nav-wrapper">
-                <ul class="left">
-                    <li><a href="/" class="left brand-logo">&nbsp;&nbsp;Community Connection</a></li>
-                </ul>
-                <ul class="right">
-                    <li><a href="{% url 'home' %}">Home</a></li>
-                    <li><a href="{% url 'about' %}">About</a></li>
-                    {% if user.is_authenticated %}
-                    <li><a href="{% url 'event_list' %}">Event List</a></li>
-                    <li><a href="{% url 'events_create' %}">Create Event</a></li>
-                    <li><a href="{% url 'logout' %}">Log Out</a></li>
-                    {% else %}
-                    <li><a href="{% url 'signup' %}">Sign Up</a></li>
-                    <li><a href="{% url 'login' %}">Log In</a></li>
-                    {% endif %}
-                </ul>
-            </div>
-        </nav>
-    </header>
+    <nav class="nav-extended">
+        <div class="nav-wrapper">
+            <a href="/" class="brand-logo">&nbsp;&nbsp;Community Connection</a>
+            <a href="/" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+            <ul id="nav-mobile" class="right hide-on-med-and-up">
+        </div>
+        <div class="nav-content">
+            <ul class="no-autoinit tabs">
+                <li class="tab center"><a class="black-text" href="{% url 'home' %}">Home</a></li>
+                <li class="tab"><a class="black-text" href="{% url 'about' %}">About</a></li>
+                {% if user.is_authenticated %}
+                <li class="tab"><a class="black-text" href="{% url 'event_list' %}">Event List</a></li>
+                <li class="tab"><a class="black-text" href="{% url 'events_create' %}">Create Event</a></li>
+                <li class="tab"><a class="black-text" href="{% url 'logout' %}">Log Out</a></li>
+                {% else %}
+                <li class="tab"><a class="black-text" href="{% url 'signup' %}">Sign Up</a></li>
+                <li class="tab"><a class="black-text" href="{% url 'login' %}">Log In</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <ul class="sidenav" id="mobile-demo">
+        <li><a class="black-text" href="{% url 'home' %}">Home</a></li>
+        <li><a class="black-text" href="{% url 'about' %}">About</a></li>
+        {% if user.is_authenticated %}
+        <li><a class="black-text" href="{% url 'event_list' %}">Event List</a></li>
+        <li><a class="black-text" href="{% url 'events_create' %}">Create Event</a></li>
+        <li><a class="black-text" href="{% url 'logout' %}">Log Out</a></li>
+        {% else %}
+        <li><a class="black-text" href="{% url 'signup' %}">Sign Up</a></li>
+        <li><a class="black-text" href="{% url 'login' %}">Log In</a></li>
+        {% endif %}
+    </ul>
 
     <main class="container">
         {% block content %}
@@ -42,7 +60,11 @@
     </main>
 
     <footer class="page-footer">
-        <div class="right">All Rights Reserved, &copy; 2019 Coummunity Connection &nbsp;</div>
+        <div class="center">All Rights Reserved, &copy; 2019 Coummunity Connection &nbsp;</div>
     </footer>
+    <script>
+        M.AutoInit()
+    </script>
 </body>
+
 </html>
