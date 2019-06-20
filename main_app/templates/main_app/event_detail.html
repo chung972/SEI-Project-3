@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
+
 <h1>Event Details</h1>
 
 <div class="row">
@@ -29,13 +30,12 @@
   </div>
 </div>
 {% for photo in event.photo_set.all|slice:":4" %}
-<img class="materialboxed" width="200" src="{{photo.url}}">
+  <div>
+    <img class="materialboxed" width="200" src="{{photo.url}}">
+  </div>
   
 
-  <div class="card-action">
-        <a href="{% url 'photo_delete' photo.id %}" class="btn-floating btn-medium waves-effect waves-light red">
-        <i class="material-icons">delete</i></a>
-      </div>
+
 {% empty %}
   <div class="card-panel teal-text center-align"> No Photos Uploaded
   </div>
@@ -46,6 +46,7 @@
      <input type="file" name="photo-file" >
      <br><br>
      <input type="submit" class="btn" value="Upload Photo">
+     <a href="{% url 'photo_gallery' event.id %}">View all photos</a>
   </form>
 
   
@@ -78,5 +79,7 @@
             <button type="submit" class="btn">Add</button>
           </form>
         </div>
+
+
   
 {% endblock %}

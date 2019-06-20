@@ -102,8 +102,16 @@ def signup(request):
         }
         return render(request, 'registration/signup.html', context)
 
+def photo_gal (request, event_id):
+    event = Event.objects.get(id=event_id)
+    return render(request, 'main_app/photo_gallery.html', {'event':event})
+    # return render(request, 'photo_gallery', {'event':event})
+    
+
 
 # full CRUD operations for Profiles (extension of User) below:
+
+
 class ProfileCreate(CreateView):
     model = User
 
