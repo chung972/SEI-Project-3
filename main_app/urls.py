@@ -15,8 +15,9 @@ urlpatterns = [
     path('events/<int:pk>/', views.EventDetail.as_view(), name='events_detail'),
     path('events/<int:pk>/update/', views.EventUpdate.as_view(), name='events_update'),
     path('events/<int:pk>/delete/', views.EventDelete.as_view(), name='events_delete'),
-    path('events/<int:event_id>/add_photo/', views.add_photo, name='add_photo'),
-    path('events/<int:pk>/PhotoDelete/', views.PhotoDelete.as_view(), name='photo_delete'),
+    path('events/<int:event_id>/user/<int:user_id>/add_photo/', views.add_photo, name='add_photo'),
+    # path('events/<int:pk>/PhotoDelete/', views.PhotoDelete.as_view(), name='photo_delete'),
+    path('events/<int:event_id>/user/<int:user_id>/delete_photo/', views.delete_photo, name='photo_delete'),
     path('events/<int:event_id>/assoc_user/<int:user_id>/', views.assoc_user, name='assoc_user'),
     path('events/<int:event_id>/unassoc_user/<int:user_id>/', views.unassoc_user, name='unassoc_user'),
 
