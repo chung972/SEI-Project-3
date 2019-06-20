@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+
+<html>
+<head>
+<style>
+* {
+  box-sizing: border-box;
+}
+
+.column {
+  float: left;
+  width: 15.33%;
+  padding: 5px;
+  
+}
+
+/* Clearfix (clear floats) */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+  
+}
+</style>
+</head>
+<body>
+
+<h1>Event Images</h1>
+
+
+{% for photo in event.photo_set.all %}
+<div class="row">
+  <div class="column">
+    <img class="materialboxed" width="200"  src="{{photo.url}}" style="padding-right:30px;">
+    <div class="card-action">
+        <a href="{% url 'photo_delete' photo.id %}" class="btn-floating btn-small waves-effect waves-light red">
+        <i class="material-icons">delete</i></a>
+      </div>
+  </div>
+
+  {% empty %}
+  {% endfor %}
+
+  {% endblock %}
