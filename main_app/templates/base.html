@@ -42,7 +42,6 @@
             </ul>
         </div>
     </nav>
-
     <ul class="sidenav" id="mobile-demo">
         <li><a class="black-text" href="{% url 'home' %}">Home</a></li>
         <li><a class="black-text" href="{% url 'about' %}">About</a></li>
@@ -66,7 +65,10 @@
         <div class="center">All Rights Reserved, &copy; 2019 Coummunity Connection &nbsp;</div>
     </footer>
     <script>
+
+    document.addEventListener("DOMContentLoaded", function(){
         M.AutoInit()
+    });
     </script>
 </body>
 
