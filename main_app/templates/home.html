@@ -5,6 +5,11 @@
 
 <h4>Home Page</h4>
 
+<h5>Featured Event:
+    <a href="{% url 'events_detail' event.id %}">{{ event.name }}</a>
+</h5>
+
+<img class="materialboxed" width="200"  src="{{ photo.url }}" style="padding-right:30px;">
 
 
 

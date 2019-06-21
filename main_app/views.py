@@ -16,12 +16,38 @@ from .models import Profile, Event, Photo, User
 # import forms below
 from .forms import LoginForm, ExtendedUserCreationForm, ExtendedUserChangeForm, ProfileForm
 
+import random
+
 S3_BASE_URL = 'https://s3.us-east-2.amazonaws.com/'
 BUCKET = 'eventcollecting'
 
 
 def home(request):
-    return render(request, 'home.html')
+    event_ceiling = len(Event.objects.all())
+    # we grab the length of ALL the events in the database and set that to be the CEILING VALUE
+    event_rand_num = random.randint(0, event_ceiling-1)
+    # next, we use random.randint 
+    # https://docs.python.org/3/library/random.html
+    event = Event.objects.all()[event_rand_num]
+
+    photo = None
+    if event.photo_set.all():
+        # print(f'{event.photo_set.all()}')
+        # eventname = event.name
+        # print(f'you in the if; eventname is: {eventname}')
+        photo_ceiling = len(event.photo_set.all())
+        # print(f'made it past photo_ceiling; photo_ceiling value is: {photo_ceiling}')
+        photo_rand_num = random.randint(0, photo_ceiling-1)
+        # print(f'photo_rand_num is: {photo_rand_num}')
+        photo = event.photo_set.all()[photo_rand_num]
+        # print(f'photo: {photo}')
+
+
+    context = {
+        'event': event,
+        'photo': photo
+    }
+    return render(request, 'home.html', context)
 
 
 def about(request):
