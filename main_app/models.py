@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.db.models.fields import BigIntegerField
 
+from django.utils import timezone
 # Create your models here.
 
 
@@ -57,3 +58,4 @@ class Photo(models.Model):
 
     def __str__(self):
         return f"Photo for event_id: {self.event_id} @{self.url}"
+

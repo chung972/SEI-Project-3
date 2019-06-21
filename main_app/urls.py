@@ -20,5 +20,7 @@ urlpatterns = [
     path('events/<int:event_id>/user/<int:user_id>/delete_photo/', views.delete_photo, name='photo_delete'),
     path('events/<int:event_id>/assoc_user/<int:user_id>/', views.assoc_user, name='assoc_user'),
     path('events/<int:event_id>/unassoc_user/<int:user_id>/', views.unassoc_user, name='unassoc_user'),
+    path('events/<int:event_id>/photo_gal/', views.photo_gal, name="photo_gallery"),
+    
 
 ]
