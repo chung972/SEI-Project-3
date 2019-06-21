@@ -15,31 +15,51 @@
         <p>Description: {{ event.description }}</p>
       </div>
       <!-- <div class="card-action"> -->
-          
 
-        <div class="fixed-action-btn">
-          <a href="#" class="btn-floating blue btn-large"><i class="large material-icons">menu</i></a>
-          <ul>
-              <li><a href="{% url 'events_delete' event.id %}" class="btn-floating red btn-large"><i class="large material-icons">delete</i></a></li>
-            <li><a href="#" class="btn-floating green btn-large"><i class="large material-icons">add</i></a></li>
-            <li><a href="{% url 'events_update' event.id %}" class="btn-floating orange btn-large"><i class="large material-icons">edit</i></a></li>
-            
-          </ul>
+
+      <div class="fixed-action-btn">
+        <a href="#" class="btn-floating blue btn-large"><i class="large material-icons">menu</i></a>
+        <ul>
+          <li><a href="{% url 'events_delete' event.id %}" class="btn-floating red btn-large">
+              <i class="large material-icons">delete</i></a></li>
+          <li><a href="#" class="btn-floating green btn-large"><i class="large material-icons">add</i></a></li>
+          <li><a href="{% url 'events_update' event.id %}" class="btn-floating orange btn-large"><i
+                class="large material-icons">edit</i></a></li>
+
+        </ul>
       </div>
     </div>
   </div>
 </div>
 {% for photo in event.photo_set.all|slice:":4" %}
+<<<<<<< HEAD
+<img class="materialboxed" width="200" src="{{photo.url}}">
+
+
+<div class="card-action">
+  <a href="{% url 'photo_delete' event.id user.id %}" class="btn-floating btn-medium waves-effect waves-light red">
+    <i class="material-icons">delete</i></a>
+</div>
+=======
   <div>
     <img class="materialboxed" width="200" src="{{photo.url}}">
   </div>
   
 
 
+>>>>>>> master
 {% empty %}
-  <div class="card-panel teal-text center-align"> No Photos Uploaded
-  </div>
+<div class="card-panel teal-text center-align"> No Photos Uploaded
+</div>
 {% endfor %}
+<<<<<<< HEAD
+<div>
+  <form action="{% url 'add_photo' event.id user.id %}" enctype="multipart/form-data" method="POST" class="card-panel">
+    {% csrf_token %}
+    <input type="file" name="photo-file">
+    <br><br>
+    <input type="submit" class="btn" value="Upload Photo">
+=======
   <div>
   <form action="{% url 'add_photo' event.id %}" enctype="multipart/form-data" method="POST" class="card-panel">
      {% csrf_token %}
@@ -47,31 +67,49 @@
      <br><br>
      <input type="submit" class="btn" value="Upload Photo">
      <a href="{% url 'photo_gallery' event.id %}">View all photos</a>
+>>>>>>> master
   </form>
 
-  
-  </div>
+
+</div>
 <div class="row">
   <div class="col s6">
-    <h3>{{ event.name }}'s Attendes</h3>
-    {% if event.users.count %}
-      {% for user in event.users.all %}
-        <div class="card">
-          <div class="card-content">
-            <span class="card-title">
-               {{ user.username }}
-            </span>
-            <div class="card-action">
-            <form action="{% url 'unassoc_user' event.id user.id %}" method="post">
-                {% csrf_token %}
-              <button type="submit" class="btn">Remove</button>
-            </form>
-          </div>
-        </div>
+    <h5>{{ event.name }}'s Attendees</h5>
+
+
+    <div class="card">
+        {% if event.users.count %}
+        {% for user in event.users.all %}
+      <div class="card-content">
+        <span class="card-title">{{ user.username }}</span>
+      </div>
+      <div class="card-action">
+        <form action="{% url 'unassoc_user' event.id user.id %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn">Remove</button>
+        </form>
+      </div>
       {% endfor %}
-    {% else %}
-      <h5>No Attendes :(</h5>
+    </div>
+      {% else %}
+      <h5>No Attendees :(</h5>
+
+    </div>
     {% endif %}
+<<<<<<< HEAD
+
+    <div class="card-content">
+      <div class="card-action">
+        <form action="{% url 'assoc_user' event.id user.id %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn">Attend</button>
+        </form>
+      </div>
+    </div>
+
+</div>
+
+=======
   </div>
   <div class="card-action">
           <form action="{% url 'assoc_user' event.id user.id %}" method="post">
@@ -82,4 +120,5 @@
 
 
   
+>>>>>>> master
 {% endblock %}
