@@ -21,53 +21,34 @@
         <a href="#" class="btn-floating blue btn-large"><i class="large material-icons">menu</i></a>
         <ul>
           <li><a href="{% url 'events_delete' event.id %}" class="btn-floating red btn-large">
-              <i class="large material-icons">delete</i></a></li>
-          <li><a href="#" class="btn-floating green btn-large"><i class="large material-icons">add</i></a></li>
-          <li><a href="{% url 'events_update' event.id %}" class="btn-floating orange btn-large"><i
-                class="large material-icons">edit</i></a></li>
-
+            <i class="large material-icons">delete</i></a></li>
+          <li><a href="#" class="btn-floating green btn-large">
+            <i class="large material-icons">add</i></a></li>
+          <li><a href="{% url 'events_update' event.id %}" class="btn-floating orange btn-large">
+            <i class="large material-icons">edit</i></a></li>
         </ul>
       </div>
     </div>
   </div>
 </div>
 {% for photo in event.photo_set.all|slice:":4" %}
-<<<<<<< HEAD
-<img class="materialboxed" width="200" src="{{photo.url}}">
-
-
-<div class="card-action">
-  <a href="{% url 'photo_delete' event.id user.id %}" class="btn-floating btn-medium waves-effect waves-light red">
-    <i class="material-icons">delete</i></a>
-</div>
-=======
   <div>
     <img class="materialboxed" width="200" src="{{photo.url}}">
   </div>
   
 
 
->>>>>>> master
 {% empty %}
 <div class="card-panel teal-text center-align"> No Photos Uploaded
 </div>
 {% endfor %}
-<<<<<<< HEAD
-<div>
-  <form action="{% url 'add_photo' event.id user.id %}" enctype="multipart/form-data" method="POST" class="card-panel">
-    {% csrf_token %}
-    <input type="file" name="photo-file">
-    <br><br>
-    <input type="submit" class="btn" value="Upload Photo">
-=======
   <div>
-  <form action="{% url 'add_photo' event.id %}" enctype="multipart/form-data" method="POST" class="card-panel">
+  <form action="{% url 'add_photo' event.id user.id %}" enctype="multipart/form-data" method="POST" class="card-panel">
      {% csrf_token %}
      <input type="file" name="photo-file" >
      <br><br>
      <input type="submit" class="btn" value="Upload Photo">
      <a href="{% url 'photo_gallery' event.id %}">View all photos</a>
->>>>>>> master
   </form>
 
 
@@ -96,7 +77,6 @@
 
     </div>
     {% endif %}
-<<<<<<< HEAD
 
     <div class="card-content">
       <div class="card-action">
@@ -109,16 +89,4 @@
 
 </div>
 
-=======
-  </div>
-  <div class="card-action">
-          <form action="{% url 'assoc_user' event.id user.id %}" method="post">
-            {% csrf_token %}
-            <button type="submit" class="btn">Add</button>
-          </form>
-        </div>
-
-
-  
->>>>>>> master
 {% endblock %}

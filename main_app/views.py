@@ -7,7 +7,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 import uuid
 import boto3
 # these four imports below are required for all login/out authentication processes
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -15,14 +15,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Profile, Event, Photo, User
 # import forms below
 from .forms import LoginForm, ExtendedUserCreationForm, ExtendedUserChangeForm, ProfileForm
-
-
-# TODO:
-#  - we still need to implement login_required and LoginRequiredMixin
-#  - also look at steps 3, 8, and 9(10) in the lab
-#  - keep in mind WHERE we want to send the user after a successful login/out (change in settings)
-#  for specifics, just refer to the lab:
-#  https://git.generalassemb.ly/SEI-CC/SEI-CC-2/blob/master/work/w08/d4/02-03-django-authentication/django-authentication.md
 
 S3_BASE_URL = 'https://s3.us-east-2.amazonaws.com/'
 BUCKET = 'eventcollecting'
@@ -73,11 +65,13 @@ def signup(request):
         }
         return render(request, 'registration/signup.html', context)
 
-def photo_gal (request, event_id):
+
+
+@login_required
+def photo_gal(request, event_id):
     event = Event.objects.get(id=event_id)
-    return render(request, 'main_app/photo_gallery.html', {'event':event})
+    return render(request, 'main_app/photo_gallery.html', {'event': event})
     # return render(request, 'photo_gallery', {'event':event})
-    
 
 
 # full CRUD operations for Profiles (extension of User) below:
@@ -88,6 +82,23 @@ def user_detail(request, user_id):
         'user': user
     }
     return render(request, 'auth/user_detail.html', context)
+
+
+@login_required
+def user_delete(request, user_id):
+    user = User.objects.get(id=user_id)
+    user.delete()
+    logout(request)
+    return redirect('home')
+
+
+@login_required
+def user_delete_confirm(request, user_id):
+    user = User.objects.get(id=user_id)
+    context = {
+        'user': user
+    }
+    return render(request, 'auth/user_confirm_delete.html', context)
 
 
 @login_required
@@ -106,10 +117,6 @@ def user_update(request, user_id):
         form = ExtendedUserChangeForm(instance=user)
         profile_form = ProfileForm(instance=user.profile)
     return render(request, 'auth/user_form.html/', {'form': form, 'profile_form': profile_form})
-
-
-def user_delete(request, user_id):
-    pass
 
 
 # full CRUD operations for Events below:
@@ -155,22 +162,29 @@ def add_photo(request, event_id, user_id):
             s3.upload_fileobj(photo_file, BUCKET, key)
             url = f"{S3_BASE_URL}{BUCKET}/{key}"
             photo = Photo(url=url, event_id=event_id, user_id=user_id)
+            print(f'stored user_id: {user_id}')
             photo.save()
         except:
             print('An error occurred uploading file to S3')
-    return redirect('events_detail', pk=event_id)
+    return redirect(f'/events/{event_id}/')
+
+
+@login_required
+def delete_photo(request, event_id):
+    logged_in_user_id = request.user.id
+    
+    if Event.objects.get(id=event_id).photo_set.filter(user_id=logged_in_user_id):
+        Event.objects.get(id=event_id).photo_set.filter(user_id=logged_in_user_id).delete()
+    return redirect(f'/events/{event_id}/photo_gal')
 
 
 @login_required
 def assoc_user(request, event_id, user_id):
     Event.objects.get(id=event_id).users.add(user_id)
     return redirect(f'/events/{event_id}/')
+    # return reverse('events_detail', pk=event_id)
     # pay attention to key that is passed in when redirecting
     # notice we must pass pk and not event_id because of route in urls.py
-
-    def get_success_url(self):
-            # return reverse('computer-edit', kwargs={'pk': self.get_object().id})
-            return reverse('events_detail', event_id=event_id)
 
 
 @login_required
@@ -181,21 +195,10 @@ def unassoc_user(request, event_id, user_id):
     return redirect(f'/events/{event_id}/')
 
     def get_success_url(self):
-            return reverse('events_detail', event_id=event_id)
+        return reverse('events_detail', event_id=event_id)
 
 
 class PhotoDelete(LoginRequiredMixin, DeleteView):
     model = Photo
     success_url = '/events/'
     # TODO attempt to get success_url to route back to events_detail page
-
-
-@login_required
-def delete_photo(request, event_id, user_id):
-    logged_in_user_id = request.user.id
-    if logged_in_user_id == user_id:
-        # Event.objects.get(id=event_id).photo_set.get(photo.user
-        return redirect(f'/events/{event_id}/')
-
-    def get_success_url(self):
-            return reverse('events_detail', pk=event_id)
