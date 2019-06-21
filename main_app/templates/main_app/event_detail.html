@@ -14,79 +14,75 @@
         <p>Location: {{ event.location }}</p>
         <p>Description: {{ event.description }}</p>
       </div>
-      <!-- <div class="card-action"> -->
-
 
       <div class="fixed-action-btn">
         <a href="#" class="btn-floating blue btn-large"><i class="large material-icons">menu</i></a>
         <ul>
-          <li><a href="{% url 'events_delete' event.id %}" class="btn-floating red btn-large">
-            <i class="large material-icons">delete</i></a></li>
-          <li><a href="#" class="btn-floating green btn-large">
-            <i class="large material-icons">add</i></a></li>
-          <li><a href="{% url 'events_update' event.id %}" class="btn-floating orange btn-large">
-            <i class="large material-icons">edit</i></a></li>
+          <li><a href="{% url 'events_delete' event.id %}" class="btn-floating red btn-large"><i
+                class="large material-icons">delete</i></a></li>
+          <li><a href="{% url 'events_create' %}" class="btn-floating green btn-large"><i
+                class="large material-icons">add</i></a></li>
+          <li><a href="{% url 'events_update' event.id %}" class="btn-floating orange btn-large"><i
+                class="large material-icons">edit</i></a></li>
+
         </ul>
       </div>
     </div>
   </div>
 </div>
-{% for photo in event.photo_set.all|slice:":4" %}
-  <div>
-    <img class="materialboxed" width="200" src="{{photo.url}}">
+
+<div class="w3-content w3-section" style="max-width:300px">
+  {% for photo in event.photo_set.all %}
+  <a class="images" style="max-width: 50px;"><img class="mySlides w3-animate-fading" src="{{photo.url}}"></a>
+  {% empty %}
+  <div class="card-panel blue-text center-align"> No Photos Uploaded
   </div>
-  
-
-
-{% empty %}
-<div class="card-panel teal-text center-align"> No Photos Uploaded
+  {% endfor %}
 </div>
-{% endfor %}
-  <div>
-  <form action="{% url 'add_photo' event.id user.id %}" enctype="multipart/form-data" method="POST" class="card-panel">
-     {% csrf_token %}
-     <input type="file" name="photo-file" >
-     <br><br>
-     <input type="submit" class="btn" value="Upload Photo">
-     <a href="{% url 'photo_gallery' event.id %}">View all photos</a>
-  </form>
-
-
+<br><br><br>
+<div class="row">
+  <div class="col s6 offset-6">
+    <form action="{% url 'add_photo' event.id %}" enctype="multipart/form-data" method="POST" class="card-panel">
+      {% csrf_token %}
+      <input type="file" name="photo-file">
+      <br><br>
+      <input type="submit" class="btn" value="Upload Photo">
+    </form>
+  </div>
+</div>
 </div>
 <div class="row">
   <div class="col s6">
-    <h5>{{ event.name }}'s Attendees</h5>
-
-
+    <h3>{{ event.name }}'s Profiles</h3>
+    {% if event.Profiles.count %}
+    {% for profile in event.Profiles.all %}
     <div class="card">
-        {% if event.users.count %}
-        {% for user in event.users.all %}
       <div class="card-content">
-        <span class="card-title">{{ user.username }}</span>
+        <span class="card-title">
+          A {{ profile.name }}
+        </span>
       </div>
-      <div class="card-action">
-        <form action="{% url 'unassoc_user' event.id user.id %}" method="post">
-          {% csrf_token %}
-          <button type="submit" class="btn">Remove</button>
-        </form>
-      </div>
-      {% endfor %}
     </div>
-      {% else %}
-      <h5>No Attendees :(</h5>
-
-    </div>
+    {% endfor %}ß
+    {% else %}
+    <h5>No Profiles :(</h5>
     {% endif %}
+  </div>
+  <script>
+    var myIndex = 0;
+    carousel();
 
-    <div class="card-content">
-      <div class="card-action">
-        <form action="{% url 'assoc_user' event.id user.id %}" method="post">
-          {% csrf_token %}
-          <button type="submit" class="btn">Attend</button>
-        </form>
-      </div>
-    </div>
+    function carousel() {
+      var i;
+      var x = document.getElementsByClassName("mySlides");
+      for (i = 0; i < x.length; i++) {
+        x[i].style.display = "none";
+      }
+      myIndex++;
+      if (myIndex > x.length) { myIndex = 1 }
+      x[myIndex - 1].style.display = "block";
+      setTimeout(carousel, 2000);
+    }
+  </script>
 
-</div>
-
-{% endblock %}
+  {% endblock %}
