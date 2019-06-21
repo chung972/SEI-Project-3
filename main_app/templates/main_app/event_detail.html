@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
+
 <h1>Event Details</h1>
 
 <div class="row">
@@ -13,6 +14,7 @@
         <p>Location: {{ event.location }}</p>
         <p>Description: {{ event.description }}</p>
       </div>
+
       <div class="fixed-action-btn">
         <a href="#" class="btn-floating blue btn-large"><i class="large material-icons">menu</i></a>
         <ul>
@@ -22,11 +24,13 @@
                 class="large material-icons">add</i></a></li>
           <li><a href="{% url 'events_update' event.id %}" class="btn-floating orange btn-large"><i
                 class="large material-icons">edit</i></a></li>
+
         </ul>
       </div>
     </div>
   </div>
 </div>
+
 <div class="w3-content w3-section" style="max-width:300px">
   {% for photo in event.photo_set.all %}
   <a class="images" style="max-width: 50px;"><img class="mySlides w3-animate-fading" src="{{photo.url}}"></a>

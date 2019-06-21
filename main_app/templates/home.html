@@ -3,13 +3,15 @@
 
 
 
-<h1>Home Page</h1>
-<p class="flow-text">
-        Whether you’re looking to mingle with your neighbors or engage with the entire city,
-        Community Connection provides a platform for posting fun, engaging events. Users can 
-        range anywhere from an individual to entire organizations! Create meaningful relationships 
-        while making your local area a better place through our app, Community Connection! 
-        </p>
+
+<h4>Home Page</h4>
+
+<h5>Featured Event:
+    <a href="{% url 'events_detail' event.id %}">{{ event.name }}</a>
+</h5>
+
+<img class="materialboxed" width="200"  src="{{ photo.url }}" style="padding-right:30px;">
+
 
 
 

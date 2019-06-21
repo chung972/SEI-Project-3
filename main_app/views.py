@@ -7,56 +7,51 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 import uuid
 import boto3
 # these four imports below are required for all login/out authentication processes
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 # import models below
-
-
 from .models import Profile, Event, Photo, User
 # import forms below
 from .forms import LoginForm, ExtendedUserCreationForm, ExtendedUserChangeForm, ProfileForm
 
-
-# TODO:
-#  - we still need to implement login_required and LoginRequiredMixin
-#  - also look at steps 3, 8, and 9(10) in the lab
-#  - keep in mind WHERE we want to send the user after a successful login/out (change in settings)
-#  for specifics, just refer to the lab:
-#  https://git.generalassemb.ly/SEI-CC/SEI-CC-2/blob/master/work/w08/d4/02-03-django-authentication/django-authentication.md
+import random
 
 S3_BASE_URL = 'https://s3.us-east-2.amazonaws.com/'
 BUCKET = 'eventcollecting'
 
 
 def home(request):
-    return render(request, 'home.html')
+    event_ceiling = len(Event.objects.all())
+    # we grab the length of ALL the events in the database and set that to be the CEILING VALUE
+    event_rand_num = random.randint(0, event_ceiling-1)
+    # next, we use random.randint 
+    # https://docs.python.org/3/library/random.html
+    event = Event.objects.all()[event_rand_num]
+
+    photo = None
+    if event.photo_set.all():
+        # print(f'{event.photo_set.all()}')
+        # eventname = event.name
+        # print(f'you in the if; eventname is: {eventname}')
+        photo_ceiling = len(event.photo_set.all())
+        # print(f'made it past photo_ceiling; photo_ceiling value is: {photo_ceiling}')
+        photo_rand_num = random.randint(0, photo_ceiling-1)
+        # print(f'photo_rand_num is: {photo_rand_num}')
+        photo = event.photo_set.all()[photo_rand_num]
+        # print(f'photo: {photo}')
+
+
+    context = {
+        'event': event,
+        'photo': photo
+    }
+    return render(request, 'home.html', context)
 
 
 def about(request):
     return render(request, 'about.html')
-
-
-def assoc_profile(request, event_id, profile_id):
-    Event.objects.get(id=event_id).profiles.add(profile_id)
-    return redirect('events_detail', event_id=event_id)
-
-
-def add_photo(request, event_id):
-    photo_file = request.FILES.get('photo-file', None)
-    if photo_file:
-        s3 = boto3.client('s3')
-        key = uuid.uuid4().hex[:6] + \
-            photo_file.name[photo_file.name.rfind('.'):]
-        try:
-            s3.upload_fileobj(photo_file, BUCKET, key)
-            url = f"{S3_BASE_URL}{BUCKET}/{key}"
-            photo = Photo(url=url, event_id=event_id)
-            photo.save()
-        except:
-            print('An error occurred uploading file to S3')
-    return redirect(f'/events/{event_id}', event_id=event_id)
 
 
 def signup(request):
@@ -97,15 +92,16 @@ def signup(request):
         return render(request, 'registration/signup.html', context)
 
 
+
+@login_required
+def photo_gal(request, event_id):
+    event = Event.objects.get(id=event_id)
+    return render(request, 'main_app/photo_gallery.html', {'event': event})
+    # return render(request, 'photo_gallery', {'event':event})
+
+
 # full CRUD operations for Profiles (extension of User) below:
-class ProfileCreate(CreateView):
-    model = User
-
-
-class UserDetail(DetailView):
-    model = User
-
-
+@login_required
 def user_detail(request, user_id):
     user = User.objects.get(id=user_id)
     context = {
@@ -114,18 +110,24 @@ def user_detail(request, user_id):
     return render(request, 'auth/user_detail.html', context)
 
 
-class UserUpdate(UpdateView):
-    # form_class = ExtendedUserChangeForm
-    # def get_object(self):
-    #     id_ = self.kwargs.get("id")
-    #     return get_object_or_404(User, id=id_)
-    # phone_number = object.user.profile.phone_number
-    fields = ('username', 'email', 'first_name', 'last_name')
-
-    def get_object(self):
-        return self.request.user
+@login_required
+def user_delete(request, user_id):
+    user = User.objects.get(id=user_id)
+    user.delete()
+    logout(request)
+    return redirect('home')
 
 
+@login_required
+def user_delete_confirm(request, user_id):
+    user = User.objects.get(id=user_id)
+    context = {
+        'user': user
+    }
+    return render(request, 'auth/user_confirm_delete.html', context)
+
+
+@login_required
 def user_update(request, user_id):
     user = get_object_or_404(User, id=user_id)
     if request.method == "POST":
@@ -143,20 +145,6 @@ def user_update(request, user_id):
     return render(request, 'auth/user_form.html/', {'form': form, 'profile_form': profile_form})
 
 
-def user_delete(request, user_id):
-    pass
-
-
-class ProfileUpdate(UpdateView):
-    model = User
-    fields = '__all__'
-
-
-class ProfileDelete(DeleteView):
-    model = Profile
-    success_url = '/'
-
-
 # full CRUD operations for Events below:
 class EventList(ListView):
     model = Event
@@ -172,24 +160,71 @@ class EventDetail(DetailView):
 # for EventCreate/Update, they share the same template (event_form.html);
 # documentation for further study: https://docs.djangoproject.com/en/2.2/ref/class-based-views/generic-display/#listview
 # suffice it to say that CBVs are REALLY powerful and convenient
-class EventCreate(CreateView):
+class EventCreate(LoginRequiredMixin, CreateView):
     model = Event
-    fields = '__all__'
-    success_url = '/events/'
+    fields = ['name', 'date', 'time', 'location', 'description']
+    # success_url = '/events/'
     # TODO: see if you can redirect straight back to the newly created Event
 
 
-class EventUpdate(UpdateView):
+class EventUpdate(LoginRequiredMixin, UpdateView):
     model = Event
     fields = '__all__'
 
 
-class EventDelete(DeleteView):
+class EventDelete(LoginRequiredMixin, DeleteView):
     model = Event
     success_url = '/events/'
 
 
-class PhotoDelete(DeleteView):
+@login_required
+def add_photo(request, event_id, user_id):
+    photo_file = request.FILES.get('photo-file', None)
+    if photo_file:
+        s3 = boto3.client('s3')
+        key = uuid.uuid4().hex[:6] + \
+            photo_file.name[photo_file.name.rfind('.'):]
+        try:
+            s3.upload_fileobj(photo_file, BUCKET, key)
+            url = f"{S3_BASE_URL}{BUCKET}/{key}"
+            photo = Photo(url=url, event_id=event_id, user_id=user_id)
+            print(f'stored user_id: {user_id}')
+            photo.save()
+        except:
+            print('An error occurred uploading file to S3')
+    return redirect(f'/events/{event_id}/')
+
+
+@login_required
+def delete_photo(request, event_id):
+    logged_in_user_id = request.user.id
+    
+    if Event.objects.get(id=event_id).photo_set.filter(user_id=logged_in_user_id):
+        Event.objects.get(id=event_id).photo_set.filter(user_id=logged_in_user_id).delete()
+    return redirect(f'/events/{event_id}/photo_gal')
+
+
+@login_required
+def assoc_user(request, event_id, user_id):
+    Event.objects.get(id=event_id).users.add(user_id)
+    return redirect(f'/events/{event_id}/')
+    # return reverse('events_detail', pk=event_id)
+    # pay attention to key that is passed in when redirecting
+    # notice we must pass pk and not event_id because of route in urls.py
+
+
+@login_required
+def unassoc_user(request, event_id, user_id):
+    logged_in_user_id = request.user.id
+    if logged_in_user_id == user_id:
+        Event.objects.get(id=event_id).users.remove(user_id)
+    return redirect(f'/events/{event_id}/')
+
+    def get_success_url(self):
+        return reverse('events_detail', event_id=event_id)
+
+
+class PhotoDelete(LoginRequiredMixin, DeleteView):
     model = Photo
     success_url = '/events/'
     # TODO attempt to get success_url to route back to events_detail page

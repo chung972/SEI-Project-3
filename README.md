@@ -1,4 +1,5 @@
 # SEI-Project-3
+
 ### Community Connection
 Whether you’re looking to mingle with your neighbors or engage with the entire city, Community Connection provides a platform for posting fun, engaging events. Users can range anywhere from an individual to entire organizations! Create meaningful relationships while making your local area a better place through our app, Community Connection! 
 
@@ -12,3 +13,4 @@ Python, Django
 [Heroku](https://community-connection.herokuapp.com/)
 
 ## Future Enhancements
+
