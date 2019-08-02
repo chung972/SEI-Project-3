@@ -2,5 +2,12 @@
 Community Connection; web app built using the django framework
 
 
-### Icebox Features
+=======
+## Heroku link:
+https://community-connection.herokuapp.com/
+
+## Trello:
+https://trello.com/b/02zzkynh/project-flow
+
+## Icebox Features
 - [ ] Allow visitors to view events
